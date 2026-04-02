@@ -1,0 +1,18 @@
+{% macro message(role, content) %}
+<div class="chat {{ 'chat-end' if role == 'user' else 'chat-start' }}" data-testid="message-{{ role }}">
+  <div class="chat-header opacity-50 text-xs">
+    {{ 'You' if role == 'user' else 'Assistant' }}
+  </div>
+  <div class="chat-bubble {{ 'chat-bubble-primary' if role == 'user' else 'chat-bubble-secondary' }}">
+    {{ content }}
+  </div>
+</div>
+{% endmacro %}
+
+{% macro tool_call_indicator(name) %}
+<div class="chat chat-start" data-testid="message-tool">
+  <div class="chat-bubble chat-bubble-accent text-sm opacity-75">
+    Using tool: {{ name }}...
+  </div>
+</div>
+{% endmacro %}

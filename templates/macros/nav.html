@@ -1,0 +1,36 @@
+<div class="navbar bg-base-100 shadow-lg mb-4">
+  <div class="flex-1">
+    <a href="/chat" class="btn btn-ghost text-xl">
+      {% if tenant and tenant.logo_url %}
+      <img src="{{ tenant.logo_url }}" alt="{{ tenant.name }}" class="h-8">
+      {% else %}
+      {{ tenant.name if tenant else 'Private AI' }}
+      {% endif %}
+    </a>
+  </div>
+  <div class="flex-none gap-2">
+    <a href="/chat" class="btn btn-ghost btn-sm">Chat</a>
+    {% if current_user and current_user.role == 'admin' %}
+    <div class="dropdown dropdown-end">
+      <div tabindex="0" role="button" class="btn btn-ghost btn-sm">Admin</div>
+      <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
+        <li><a href="/admin">Dashboard</a></li>
+        <li><a href="/admin/users">Users</a></li>
+        <li><a href="/admin/agents">Agents</a></li>
+        <li><a href="/admin/tools">Tools</a></li>
+        <li><a href="/admin/folders">Folders</a></li>
+        <li><a href="/admin/usage">Usage</a></li>
+        <li><a href="/admin/audit">Audit Log</a></li>
+      </ul>
+    </div>
+    {% endif %}
+    <div class="dropdown dropdown-end">
+      <div tabindex="0" role="button" class="btn btn-ghost btn-sm">
+        {{ current_user.email if current_user else '' }}
+      </div>
+      <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-40 p-2 shadow">
+        <li><a href="/logout">Logout</a></li>
+      </ul>
+    </div>
+  </div>
+</div>

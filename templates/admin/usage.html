@@ -1,0 +1,41 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Admin — Usage{% endblock %}
+
+{% block admin_content %}
+<h1 class="text-2xl font-bold mb-4">Usage (Last 30 Days)</h1>
+
+<h2 class="text-lg font-semibold mb-2">By Model</h2>
+<div class="overflow-x-auto mb-6">
+  <table class="table table-zebra bg-base-100">
+    <thead><tr><th>Model</th><th>Calls</th><th>Input Tokens</th><th>Output Tokens</th><th>Total</th></tr></thead>
+    <tbody>
+      {% for u in by_model %}
+      <tr>
+        <td>{{ u.model_id }}</td>
+        <td>{{ u.count }}</td>
+        <td>{{ "{:,}".format(u.total_input|int) }}</td>
+        <td>{{ "{:,}".format(u.total_output|int) }}</td>
+        <td class="font-semibold">{{ "{:,}".format(u.total_input|int + u.total_output|int) }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<h2 class="text-lg font-semibold mb-2">By User</h2>
+<div class="overflow-x-auto">
+  <table class="table table-zebra bg-base-100">
+    <thead><tr><th>User</th><th>Calls</th><th>Input Tokens</th><th>Output Tokens</th></tr></thead>
+    <tbody>
+      {% for u in by_user %}
+      <tr>
+        <td>{{ u.email }}</td>
+        <td>{{ u.count }}</td>
+        <td>{{ "{:,}".format(u.total_input|int) }}</td>
+        <td>{{ "{:,}".format(u.total_output|int) }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

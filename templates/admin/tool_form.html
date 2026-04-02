@@ -1,0 +1,63 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Admin — Register Tool{% endblock %}
+
+{% block admin_content %}
+<div class="mb-4">
+  <a href="/admin/tools" class="btn btn-ghost btn-sm">&larr; Back to Tools</a>
+</div>
+
+<div class="card bg-base-100 shadow max-w-2xl">
+  <div class="card-body">
+    <h1 class="card-title text-2xl">Register Tool</h1>
+
+    <form method="POST" action="/api/tools" hx-post="/api/tools">
+      <div class="grid grid-cols-2 gap-4">
+        <div class="form-control">
+          <label class="label"><span class="label-text font-semibold">Name</span></label>
+          <input type="text" name="name" placeholder="weather_lookup" class="input input-bordered" required>
+        </div>
+        <div class="form-control">
+          <label class="label"><span class="label-text font-semibold">Endpoint URL</span></label>
+          <input type="text" name="endpoint" placeholder="https://api.example.com/v1" class="input input-bordered" required>
+        </div>
+        <div class="form-control">
+          <label class="label"><span class="label-text font-semibold">HTTP Method</span></label>
+          <select name="method" class="select select-bordered">
+            <option>POST</option><option>GET</option><option>PUT</option><option>DELETE</option>
+          </select>
+        </div>
+        <div class="form-control">
+          <label class="label"><span class="label-text font-semibold">Auth Type</span></label>
+          <select name="auth_type" class="select select-bordered">
+            <option value="none">None</option>
+            <option value="api_key">API Key</option>
+            <option value="oauth">OAuth</option>
+          </select>
+        </div>
+        <div class="form-control">
+          <label class="label"><span class="label-text font-semibold">Timeout (ms)</span></label>
+          <input type="number" name="timeout_ms" value="5000" class="input input-bordered" required>
+        </div>
+      </div>
+
+      <div class="form-control mt-4">
+        <label class="label"><span class="label-text font-semibold">Description</span></label>
+        <input type="text" name="description" placeholder="What this tool does — the model reads this" class="input input-bordered" required>
+      </div>
+
+      <div class="form-control mt-4">
+        <label class="label"><span class="label-text font-semibold">Input Schema (JSON)</span></label>
+        <textarea name="input_schema" rows="6"
+                  class="textarea textarea-bordered font-mono text-sm"
+                  required>{"type": "object", "properties": {}}</textarea>
+        <label class="label"><span class="label-text-alt">JSON Schema that defines the tool's input parameters.</span></label>
+      </div>
+
+      <div class="flex gap-2 mt-6">
+        <button type="submit" class="btn btn-primary">Register Tool</button>
+        <a href="/admin/tools" class="btn btn-ghost">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

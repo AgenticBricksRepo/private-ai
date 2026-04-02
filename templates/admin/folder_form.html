@@ -1,0 +1,35 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Admin — Create Folder{% endblock %}
+
+{% block admin_content %}
+<div class="mb-4">
+  <a href="/admin/folders" class="btn btn-ghost btn-sm">&larr; Back to Folders</a>
+</div>
+
+<div class="card bg-base-100 shadow max-w-lg">
+  <div class="card-body">
+    <h1 class="card-title text-2xl">Create Folder</h1>
+
+    <form method="POST" action="/api/folders" hx-post="/api/folders">
+      <div class="form-control mb-4">
+        <label class="label"><span class="label-text font-semibold">Name</span></label>
+        <input type="text" name="name" placeholder="Knowledge Base" class="input input-bordered" required>
+      </div>
+
+      <div class="form-control mb-6">
+        <label class="label"><span class="label-text font-semibold">Tier</span></label>
+        <select name="tier" class="select select-bordered">
+          <option value="1">Tier 1 — Small corpus (full content injected into context)</option>
+          <option value="2">Tier 2 — Larger corpus (indexed, model selects relevant docs)</option>
+        </select>
+        <label class="label"><span class="label-text-alt">Tier 1 for &lt;50 docs that fit in the context window. Tier 2 for larger collections.</span></label>
+      </div>
+
+      <div class="flex gap-2">
+        <button type="submit" class="btn btn-primary">Create Folder</button>
+        <a href="/admin/folders" class="btn btn-ghost">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Admin — Folders{% endblock %}
+
+{% block admin_content %}
+<div class="flex justify-between items-center mb-4">
+  <h1 class="text-2xl font-bold">Folders</h1>
+  <a href="/admin/folders/new" class="btn btn-primary btn-sm">+ Create Folder</a>
+</div>
+
+<div class="overflow-x-auto">
+  <table class="table table-zebra bg-base-100">
+    <thead><tr><th>Name</th><th>Tier</th><th>Documents</th><th>Created</th><th>Actions</th></tr></thead>
+    <tbody>
+      {% for f in folders %}
+      <tr>
+        <td class="font-semibold">{{ f.name }}</td>
+        <td><span class="badge">Tier {{ f.tier }}</span></td>
+        <td>{{ f.doc_count }}</td>
+        <td>{{ f.created_at.strftime('%Y-%m-%d') if f.created_at else '-' }}</td>
+        <td>
+          <form hx-post="/api/folders/{{ f.id }}/upload" hx-encoding="multipart/form-data" class="inline-flex gap-1 items-center">
+            <input type="file" name="file" class="file-input file-input-bordered file-input-xs w-40" required>
+            <button type="submit" class="btn btn-ghost btn-xs">Upload</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

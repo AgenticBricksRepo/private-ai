@@ -1,0 +1,34 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Admin — Agents{% endblock %}
+
+{% block admin_content %}
+<div class="flex justify-between items-center mb-4">
+  <h1 class="text-2xl font-bold">Agents</h1>
+  <a href="/admin/agents/new" class="btn btn-primary btn-sm">+ Create Agent</a>
+</div>
+
+<div class="overflow-x-auto">
+  <table class="table table-zebra bg-base-100">
+    <thead><tr><th>Name</th><th>Mode</th><th>Description</th><th>Created</th><th>Actions</th></tr></thead>
+    <tbody>
+      {% for a in agents %}
+      <tr id="agent-row-{{ a.id }}">
+        <td class="font-semibold">{{ a.name }}</td>
+        <td><span class="badge badge-{{ 'info' if a.mode == 'interactive' else 'warning' }}">{{ a.mode }}</span></td>
+        <td class="max-w-xs truncate">{{ a.description or '-' }}</td>
+        <td>{{ a.created_at.strftime('%Y-%m-%d') if a.created_at else '-' }}</td>
+        <td class="flex gap-1">
+          <a href="/admin/agents/{{ a.id }}/edit" class="btn btn-ghost btn-xs">Edit</a>
+          <button class="btn btn-ghost btn-xs text-error"
+                  hx-delete="/api/agents/{{ a.id }}"
+                  hx-confirm="Delete agent '{{ a.name }}'?"
+                  hx-headers='{"Content-Type": "application/json"}'
+                  hx-target="#agent-row-{{ a.id }}"
+                  hx-swap="outerHTML">Del</button>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

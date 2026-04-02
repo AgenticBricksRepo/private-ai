@@ -1,0 +1,34 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Admin — Tools{% endblock %}
+
+{% block admin_content %}
+<div class="flex justify-between items-center mb-4">
+  <h1 class="text-2xl font-bold">Tools</h1>
+  <a href="/admin/tools/new" class="btn btn-primary btn-sm">+ Register Tool</a>
+</div>
+
+<div class="overflow-x-auto">
+  <table class="table table-zebra bg-base-100">
+    <thead><tr><th>Name</th><th>Endpoint</th><th>Method</th><th>Auth</th><th>Timeout</th><th>Actions</th></tr></thead>
+    <tbody>
+      {% for t in tools %}
+      <tr id="tool-row-{{ t.id }}">
+        <td class="font-semibold">{{ t.name }}</td>
+        <td class="max-w-xs truncate text-sm">{{ t.endpoint }}</td>
+        <td><span class="badge badge-sm">{{ t.method }}</span></td>
+        <td>{{ t.auth_type }}</td>
+        <td>{{ t.timeout_ms }}ms</td>
+        <td>
+          <button class="btn btn-ghost btn-xs text-error"
+                  hx-delete="/api/tools/{{ t.id }}"
+                  hx-confirm="Delete tool '{{ t.name }}'?"
+                  hx-headers='{"Content-Type": "application/json"}'
+                  hx-target="#tool-row-{{ t.id }}"
+                  hx-swap="outerHTML">Del</button>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

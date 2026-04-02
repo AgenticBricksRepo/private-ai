@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="flex gap-4">
+  <!-- Admin sidebar -->
+  <div class="w-48">
+    <ul class="menu bg-base-100 rounded-box">
+      <li><a href="/admin" class="{% if request.path == '/admin' %}active{% endif %}">Dashboard</a></li>
+      <li><a href="/admin/users" class="{% if request.path == '/admin/users' %}active{% endif %}">Users</a></li>
+      <li><a href="/admin/agents" class="{% if request.path == '/admin/agents' %}active{% endif %}">Agents</a></li>
+      <li><a href="/admin/tools" class="{% if request.path == '/admin/tools' %}active{% endif %}">Tools</a></li>
+      <li><a href="/admin/folders" class="{% if request.path == '/admin/folders' %}active{% endif %}">Folders</a></li>
+      <li><a href="/admin/usage" class="{% if request.path == '/admin/usage' %}active{% endif %}">Usage</a></li>
+      <li><a href="/admin/audit" class="{% if request.path == '/admin/audit' %}active{% endif %}">Audit Log</a></li>
+    </ul>
+  </div>
+
+  <!-- Content area -->
+  <div class="flex-1">
+    {% block admin_content %}{% endblock %}
+  </div>
+</div>
+{% endblock %}

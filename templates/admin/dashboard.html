@@ -1,0 +1,85 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Admin — Dashboard{% endblock %}
+
+{% block admin_content %}
+<h1 class="text-2xl font-bold mb-4">Dashboard</h1>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+  <div class="stat bg-base-100 rounded-box shadow">
+    <div class="stat-title">Recent Sessions</div>
+    <div class="stat-value">{{ sessions|length }}</div>
+  </div>
+  {% for u in usage %}
+  <div class="stat bg-base-100 rounded-box shadow">
+    <div class="stat-title">{{ u.model_id }}</div>
+    <div class="stat-value text-lg">{{ "{:,}".format(u.total_input|int + u.total_output|int) }}</div>
+    <div class="stat-desc">tokens ({{ u.count }} calls)</div>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- Branding + Theme -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+  <!-- Branding -->
+  <div class="card bg-base-100 shadow">
+    <div class="card-body py-4">
+      <h3 class="font-semibold mb-2">Branding</h3>
+      <form hx-post="/api/admin/branding" hx-swap="none" class="flex flex-col gap-2">
+        <div class="form-control">
+          <label class="label py-1"><span class="label-text text-xs">App Name</span></label>
+          <input type="text" name="name" value="{{ tenant.name if tenant else 'Private AI' }}"
+                 class="input input-bordered input-sm">
+        </div>
+        <div class="form-control">
+          <label class="label py-1"><span class="label-text text-xs">Logo URL (optional)</span></label>
+          <input type="text" name="logo_url" value="{{ tenant.logo_url or '' }}"
+                 placeholder="https://example.com/logo.png" class="input input-bordered input-sm">
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm mt-1"
+                onclick="this.textContent='Saved!'; setTimeout(() => this.textContent='Save Branding', 1500)">Save Branding</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Theme -->
+  <div class="card bg-base-100 shadow">
+    <div class="card-body py-4">
+      <h3 class="font-semibold mb-2">Theme</h3>
+      <select id="theme-select" class="select select-bordered select-sm w-full"
+              hx-post="/api/admin/theme" hx-trigger="change" hx-swap="none"
+              name="theme">
+        {% set themes = ["dark", "light", "corporate", "business", "night", "luxury", "dracula", "synthwave", "cyberpunk", "retro", "valentine", "aqua", "lofi", "fantasy", "cmyk", "nord"] %}
+        {% set current = tenant.theme['name'] if tenant and tenant.theme and 'name' in tenant.theme else 'dark' %}
+        {% for t in themes %}
+        <option value="{{ t }}" {% if t == current %}selected{% endif %}>{{ t|capitalize }}</option>
+        {% endfor %}
+      </select>
+      <p class="text-xs opacity-50 mt-1">Applied for all users on next page load</p>
+    </div>
+  </div>
+</div>
+
+<h2 class="text-xl font-semibold mb-2">Recent Sessions</h2>
+<div class="overflow-x-auto">
+  <table class="table table-zebra bg-base-100">
+    <thead><tr><th>Started</th><th>User</th><th>Model</th><th>Status</th></tr></thead>
+    <tbody>
+      {% for s in sessions %}
+      <tr>
+        <td>{{ s.started_at.strftime('%Y-%m-%d %H:%M') if s.started_at else '-' }}</td>
+        <td>{{ s.user_email or '-' }}</td>
+        <td>{{ s.model_id }}</td>
+        <td><span class="badge badge-{{ 'success' if s.status == 'completed' else ('error' if s.status == 'error' else 'info') }}">{{ s.status }}</span></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<script>
+  document.getElementById('theme-select').addEventListener('change', function() {
+    document.documentElement.setAttribute('data-theme', this.value);
+  });
+</script>
+{% endblock %}

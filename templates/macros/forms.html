@@ -1,0 +1,29 @@
+{% macro text_input(name, label, value="", type="text", required=false, placeholder="") %}
+<div class="form-control w-full">
+  <label class="label"><span class="label-text">{{ label }}</span></label>
+  <input type="{{ type }}" name="{{ name }}" value="{{ value }}"
+         placeholder="{{ placeholder }}"
+         class="input input-bordered w-full"
+         {% if required %}required{% endif %}>
+</div>
+{% endmacro %}
+
+{% macro textarea(name, label, value="", rows=4, required=false) %}
+<div class="form-control w-full">
+  <label class="label"><span class="label-text">{{ label }}</span></label>
+  <textarea name="{{ name }}" rows="{{ rows }}"
+            class="textarea textarea-bordered w-full"
+            {% if required %}required{% endif %}>{{ value }}</textarea>
+</div>
+{% endmacro %}
+
+{% macro select(name, label, options, selected="") %}
+<div class="form-control w-full">
+  <label class="label"><span class="label-text">{{ label }}</span></label>
+  <select name="{{ name }}" class="select select-bordered w-full">
+    {% for value, text in options %}
+    <option value="{{ value }}" {% if value == selected %}selected{% endif %}>{{ text }}</option>
+    {% endfor %}
+  </select>
+</div>
+{% endmacro %}

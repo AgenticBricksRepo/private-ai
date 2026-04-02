@@ -1,0 +1,123 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Admin — Audit Log{% endblock %}
+
+{% block admin_content %}
+<h1 class="text-2xl font-bold mb-4">Audit Log</h1>
+
+<!-- Filters -->
+<div class="flex gap-3 mb-4 items-end flex-wrap">
+  <form method="GET" action="/admin/audit" class="flex gap-3 items-end flex-wrap">
+    <div class="form-control">
+      <label class="label py-0"><span class="label-text text-xs">Event Type</span></label>
+      <select name="event_type" class="select select-bordered select-sm w-48">
+        <option value="">All Events</option>
+        {% for et in event_types %}
+        <option value="{{ et }}" {% if et == current_event_type %}selected{% endif %}>{{ et }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="form-control">
+      <label class="label py-0"><span class="label-text text-xs">Search Payload</span></label>
+      <input type="text" name="search" value="{{ current_search }}"
+             placeholder="Search..." class="input input-bordered input-sm w-48">
+    </div>
+    <button type="submit" class="btn btn-sm btn-primary">Filter</button>
+    {% if current_event_type or current_search %}
+    <a href="/admin/audit" class="btn btn-sm btn-ghost">Clear</a>
+    {% endif %}
+  </form>
+  <span class="text-sm opacity-50">{{ total }} entries</span>
+</div>
+
+<!-- Log table -->
+<div class="overflow-x-auto">
+  <table class="table bg-base-100 table-sm">
+    <thead>
+      <tr>
+        <th class="w-8"></th>
+        <th>Time</th>
+        <th>Event</th>
+        <th>User</th>
+        <th>Summary</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for log in logs %}
+      <tr class="cursor-pointer hover" onclick="toggleDetail('detail-{{ log.id }}')">
+        <td class="text-center"><span id="arrow-{{ log.id }}" class="text-xs opacity-50">&#9654;</span></td>
+        <td class="whitespace-nowrap">{{ log.ts.strftime('%Y-%m-%d %H:%M:%S') if log.ts else '-' }}</td>
+        <td><span class="badge badge-sm badge-outline">{{ log.event_type }}</span></td>
+        <td>{{ log.user_email or '-' }}</td>
+        <td class="max-w-sm truncate text-xs opacity-70">
+          {% if log.payload is mapping %}
+            {% for k, v in log.payload.items() %}{{ k }}={{ v }}{% if not loop.last %}, {% endif %}{% endfor %}
+          {% else %}
+            {{ log.payload }}
+          {% endif %}
+        </td>
+      </tr>
+      <!-- Detail row (hidden by default) -->
+      <tr id="detail-{{ log.id }}" class="hidden">
+        <td></td>
+        <td colspan="4">
+          <div class="bg-base-200 rounded-lg p-3 text-sm">
+            <div class="grid grid-cols-2 gap-x-8 gap-y-1 mb-2">
+              <div><span class="opacity-50">Event:</span> <strong>{{ log.event_type }}</strong></div>
+              <div><span class="opacity-50">Time:</span> {{ log.ts.strftime('%Y-%m-%d %H:%M:%S') if log.ts else '-' }}</div>
+              <div><span class="opacity-50">User:</span> {{ log.user_email or log.user_id or '-' }}</div>
+              <div><span class="opacity-50">Session:</span> {{ log.session_id or '-' }}</div>
+              {% if log.agent_id %}<div><span class="opacity-50">Agent:</span> {{ log.agent_id }}</div>{% endif %}
+            </div>
+            <div class="divider my-1"></div>
+            <div class="font-semibold text-xs opacity-50 mb-1">Payload</div>
+            <pre class="bg-base-300 rounded p-2 text-xs overflow-x-auto whitespace-pre-wrap">{{ log.payload | tojson(indent=2) }}</pre>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Pagination -->
+{% if total_pages > 1 %}
+<div class="flex justify-center mt-4">
+  <div class="join">
+    {% if page > 1 %}
+    <a href="/admin/audit?page={{ page - 1 }}&event_type={{ current_event_type }}&search={{ current_search }}"
+       class="join-item btn btn-sm">Previous</a>
+    {% endif %}
+
+    {% for p in range(1, total_pages + 1) %}
+      {% if p == page %}
+        <button class="join-item btn btn-sm btn-active">{{ p }}</button>
+      {% elif p <= 3 or p >= total_pages - 2 or (p >= page - 1 and p <= page + 1) %}
+        <a href="/admin/audit?page={{ p }}&event_type={{ current_event_type }}&search={{ current_search }}"
+           class="join-item btn btn-sm">{{ p }}</a>
+      {% elif p == 4 or p == total_pages - 3 %}
+        <button class="join-item btn btn-sm btn-disabled">...</button>
+      {% endif %}
+    {% endfor %}
+
+    {% if page < total_pages %}
+    <a href="/admin/audit?page={{ page + 1 }}&event_type={{ current_event_type }}&search={{ current_search }}"
+       class="join-item btn btn-sm">Next</a>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
+
+<script>
+function toggleDetail(id) {
+  const row = document.getElementById(id);
+  const arrow = document.getElementById('arrow-' + id.replace('detail-', ''));
+  if (row.classList.contains('hidden')) {
+    row.classList.remove('hidden');
+    arrow.innerHTML = '&#9660;';
+  } else {
+    row.classList.add('hidden');
+    arrow.innerHTML = '&#9654;';
+  }
+}
+</script>
+{% endblock %}

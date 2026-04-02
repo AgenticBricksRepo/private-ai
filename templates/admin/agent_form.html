@@ -1,0 +1,56 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Admin — {{ 'Edit' if agent else 'Create' }} Agent{% endblock %}
+
+{% block admin_content %}
+<div class="mb-4">
+  <a href="/admin/agents" class="btn btn-ghost btn-sm">&larr; Back to Agents</a>
+</div>
+
+<div class="card bg-base-100 shadow max-w-2xl">
+  <div class="card-body">
+    <h1 class="card-title text-2xl">{{ 'Edit Agent' if agent else 'Create Agent' }}</h1>
+
+    <form method="POST" action="{{ '/api/agents/' + agent.id|string if agent else '/api/agents' }}"
+          hx-post="{{ '/api/agents/' + agent.id|string if agent else '/api/agents' }}"
+          {% if agent %}hx-put="/api/agents/{{ agent.id }}"{% endif %}
+          hx-headers='{"Content-Type": "application/json"}'
+          hx-ext="json-enc">
+
+      <div class="form-control mb-3">
+        <label class="label"><span class="label-text font-semibold">Name</span></label>
+        <input type="text" name="name" value="{{ agent.name if agent else '' }}"
+               placeholder="My Agent" class="input input-bordered" required>
+      </div>
+
+      <div class="form-control mb-3">
+        <label class="label"><span class="label-text font-semibold">Description</span></label>
+        <input type="text" name="description" value="{{ agent.description if agent and agent.description else '' }}"
+               placeholder="What this agent does" class="input input-bordered">
+      </div>
+
+      <div class="form-control mb-3">
+        <label class="label"><span class="label-text font-semibold">Mode</span></label>
+        <select name="mode" class="select select-bordered">
+          <option value="interactive" {% if agent and agent.mode == 'interactive' %}selected{% endif %}>Interactive — user drives the conversation</option>
+          <option value="headless" {% if agent and agent.mode == 'headless' %}selected{% endif %}>Headless — runs autonomously on a trigger</option>
+        </select>
+      </div>
+
+      <div class="form-control mb-6">
+        <label class="label"><span class="label-text font-semibold">System Prompt</span></label>
+        <textarea name="prompt_md" rows="10"
+                  class="textarea textarea-bordered font-mono text-sm"
+                  placeholder="You are a helpful assistant. Answer questions clearly and concisely.">{{ agent.prompt_md if agent else '' }}</textarea>
+        <label class="label"><span class="label-text-alt">Markdown supported. This is the instruction the model receives at the start of every session.</span></label>
+      </div>
+
+      <div class="flex gap-2">
+        <button type="submit" class="btn btn-primary">{{ 'Save Changes' if agent else 'Create Agent' }}</button>
+        <a href="/admin/agents" class="btn btn-ghost">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="https://unpkg.com/htmx-ext-json-enc@2.0.1/json-enc.js"></script>
+{% endblock %}
